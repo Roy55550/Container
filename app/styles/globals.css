@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+body {
+  @apply text-gray-800;
+}
+
+.container {
+  @apply px-4;
+}
+
+button, .button, a {
+  @apply min-h-[44px] min-w-[44px] p-3;
+}
+
+.grid {
+  @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+}
+
+p, li {
+  @apply leading-relaxed;
+}
+
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.accordion-content.open {
+  max-height: 1000px;
+  transition: max-height 0.5s ease-in;
+}
+
+.bottom-nav {
+  @apply fixed bottom-0 left-0 right-0 bg-white shadow-lg;
+}
+
+.fab {
+  @apply fixed bottom-4 right-4 bg-[#0F5C5B] text-white rounded-full p-4 shadow-lg;
+}

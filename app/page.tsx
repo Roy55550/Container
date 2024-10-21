@@ -1,250 +1,213 @@
 "use client";
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Search, Home, BookOpen, Library, Settings, ExternalLink, Edit, Check, Plus, X, Youtube, Twitter } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
-import { motion, AnimatePresence } from 'framer-motion'
-import Button from "./components/button"
-import { ArrowRight, Heart, Users, Scale, Shield, Award, ThumbsUp, Menu, X } from 'lucide-react'
-import { playfair, inter } from './fonts'
-import Navigation from './components/Navigation'
-import BottomNavigation from './components/BottomNavigation'
+import { Button } from "./components/ui/button"
+import { Input } from "./components/ui/input"
+import { Badge } from "./components/ui/badge"
+import { Card, CardContent } from "./components/ui/card"
+import { ScrollArea } from "./components/ui/scroll-area"
 
-const categories = [
-  {
-    title: "Getting Married",
-    description: "Prepare for your big day and build a strong foundation for your marriage.",
-    icon: <Heart className="w-16 h-16 text-[#0F5C5B]" />,
-    color: "bg-[#B2D8D8]", // Lighter teal color
-    link: "/getting-married"
-  },
-  {
-    title: "Journey into Parenthood",
-    description: "Get support for raising a happy, healthy family.",
-    icon: <Users className="w-16 h-16 text-[#0F5C5B]" />,
-    color: "bg-[#E8F5E9]",
-    link: "/journey-into-parenthood"
-  },
-  {
-    title: "Separation & Divorce",
-    description: "Find compassionate guidance through difficult transitions.",
-    icon: <Scale className="w-16 h-16 text-[#0F5C5B]" />,
-    color: "bg-[#E3F2FD]",
-    link: "/separation-divorce-main"
-  },
-]
+// Update the ContentItem interface to match the structure of InboxItem
+interface ContentItem {
+  id: string;
+  source: string;
+  header: string;
+  summary: string;
+  suggestedTags: string[];
+  category: string;
+  note: string;
+  link: string;
+  date?: string; // Make this optional as it might not be present in all items
+  isRead?: boolean; // Make this optional as it might not be present in all items
+}
 
-const articles = [
-  {
-    title: "Top 6 Reasons to Get Marriage Counseling",
-    excerpt: "Discover why marriage counseling can be beneficial for couples at any stage of their relationship.",
-    author: "Dr. Emily Carter",
-    date: "September 1, 2023",
-    image: "/images/6-reasons-article/image1.jpg",
-    link: "/articles/getting-married/top-6-reasons-to-get-marriage-counseling",
-  },
-  {
-    title: "Preparing for Parenthood: Strengthen Your Bond",
-    excerpt: "Learn how to set realistic expectations, prioritize postnatal recovery, and build a strong co-parenting foundation as you prepare for the journey of parenthood.",
-    author: "Family Edition Team",
-    date: "July 15, 2023",
-    image: "/images/Preparing for Parenthood: Strengthen Your Bond/image1.jpg",
-    link: "/articles/journey-into-parenthood/preparing-for-parenthood-strengthen-your-bond",
-  },
-  {
-    title: "Top 5 Co-Parenting Tips",
-    excerpt: "Discover effective strategies for successful co-parenting and ensuring your children's well-being.",
-    author: "Family Edition Team",
-    date: "June 20, 2023",
-    image: "/images/Top 5 co parenting tips/top 5 image1.jpg",
-    link: "/articles/divorce-process-guide/top-5-co-parenting-tips",
-  },
-]
+const SourceIcon: React.FC<{ source: string }> = ({ source }) => {
+  switch (source.toLowerCase()) {
+    case 'youtube':
+      return <Youtube className="h-5 w-5 text-red-500" />
+    case 'twitter':
+      return <Twitter className="h-5 w-5 text-blue-400" />
+    default:
+      return <ExternalLink className="h-5 w-5 text-gray-500" />
+  }
+}
 
-export default function Home() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+export default function ContentLibrary() {
+  const [items, setItems] = useState<ContentItem[]>([])
+  const [activeCategory, setActiveCategory] = useState('all')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [isMobile, setIsMobile] = useState(false)
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768) // Adjust this breakpoint as needed
+    }
+
+    checkIsMobile()
+    window.addEventListener('resize', checkIsMobile)
+
+    // Load items from localStorage
+    const storedItems = JSON.parse(localStorage.getItem('contentLibraryItems') || '[]')
+    setItems(storedItems)
+
+    return () => window.removeEventListener('resize', checkIsMobile)
+  }, [])
+
+  const categories = ['all', ...new Set(items.map(item => item.category))]
+
+  const filteredItems = items.filter(item => 
+    (activeCategory === 'all' || item.category === activeCategory) &&
+    (item.header.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     item.summary.toLowerCase().includes(searchTerm.toLowerCase()))
+  )
+
+  const handleMarkAsRead = (id: string) => {
+    setItems(items.map(item => 
+      item.id === id ? { ...item, isRead: !item.isRead } : item
+    ))
+    // Update localStorage
+    localStorage.setItem('contentLibraryItems', JSON.stringify(items))
+  }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex justify-start items-center"> {/* Use justify-start */}
-          <Link href="/" className="flex items-center">
-            <span className="text-xl md:text-3xl font-bold text-[#0F5C5B]">Family Edition</span>
-          </Link>
-          <nav className="hidden md:block ml-auto"> {/* Added ml-auto for spacing */}
-            <ul className="flex space-x-6">
-              <li><Link href="/" className="text-gray-600 hover:text-[#0F5C5B] transition-colors">Home</Link></li>
-              <li><Link href="/getting-married" className="text-gray-600 hover:text-[#0F5C5B] transition-colors">Getting Married</Link></li>
-              <li><Link href="/journey-into-parenthood" className="text-gray-600 hover:text-[#0F5C5B] transition-colors">Journey into Parenthood</Link></li>
-              <li><Link href="/separation-divorce-main" className="text-gray-600 hover:text-[#0F5C5B] transition-colors">Separation & Divorce</Link></li>
-              <li><Link href="#" className="text-gray-600 hover:text-[#0F5C5B] transition-colors">About</Link></li>
-              <li><Link href="#" className="text-gray-600 hover:text-[#0F5C5B] transition-colors">Contact</Link></li>
-            </ul>
-          </nav>
-          <button className="md:hidden" onClick={toggleMenu}>
-            <Menu className="h-6 w-6 text-[#0F5C5B]" />
-          </button>
-        </div>
-      </header>
-
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ x: "-100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ type: "tween" }}
-            className="fixed inset-0 bg-white z-40 flex flex-col"
-          >
-            <div className="flex justify-between items-center p-4 border-b border-gray-200">
-              <Link href="/" className="flex items-center">
-                <span className="text-lg font-bold text-[#0F5C5B]">Family Edition</span>
-              </Link>
-              <button onClick={toggleMenu}>
-                <X className="h-6 w-6 text-[#0F5C5B]" />
-              </button>
-            </div>
-            <nav className="flex-1 overflow-y-auto p-4">
-              <ul className="space-y-4">
-                <li>
-                  <Link href="/getting-married" className="text-lg text-[#0F5C5B] hover:underline" onClick={toggleMenu}>
-                    Getting Married
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/journey-into-parenthood" className="text-lg text-[#0F5C5B] hover:underline" onClick={toggleMenu}>
-                    Journey to Parenthood
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/separation-divorce-main" className="text-lg text-[#0F5C5B] hover:underline" onClick={toggleMenu}>
-                    Separation & Divorce
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-lg text-[#0F5C5B] hover:underline" onClick={toggleMenu}>
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-lg text-[#0F5C5B] hover:underline" onClick={toggleMenu}>
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <main>
-        {/* Hero Section */}
-        <section className="bg-[#0F5C5B] text-white py-16 md:py-24">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center">
-              <h1 className={`${playfair.className} text-4xl md:text-5xl font-bold mb-6`}>Navigate Life's Relationships with Expert Guidance</h1>
-              <p className="text-xl mb-8">From first dates to family milestones, we're here to support you every step of the way.</p>
-              <Link href="/relationship-support-quiz">
-                <Button 
-                  className="bg-white text-[#0F5C5B] hover:bg-gray-100 hover:text-[#0A4342] px-8 py-4 rounded-full text-lg font-bold"
-                  variant="ghost"
-                >
-                  Start Your Relationship Support Quiz
-                  <ArrowRight className="ml-2 h-5 w-5 inline" />
-                </Button>
-              </Link>
-            </div>
+    <div className="flex h-screen bg-gradient-to-br from-purple-50 to-blue-50">
+      {/* Sidebar - hidden on mobile */}
+      {!isMobile && (
+        <nav className="w-64 bg-white border-r border-gray-200 p-4">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-purple-800">bobo</h1>
           </div>
-        </section>
-
-        {/* We're Here to Help Section */}
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <h2 className={`${playfair.className} text-3xl md:text-4xl font-bold mb-6 text-center text-[#0F5C5B]`}>We're Here to Help at Every Stage of Your Relationship</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {categories.map((category, index) => (
-                <motion.div 
-                  key={index} 
-                  className={`${category.color} rounded-lg p-6 text-center flex flex-col items-center justify-between`}
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <div className="mb-4">
-                    {category.icon}
-                  </div>
-                  <h3 className={`${playfair.className} text-2xl font-bold mb-2 text-[#0F5C5B]`}>{category.title}</h3>
-                  <p className="text-gray-700 mb-4 text-lg">{category.description}</p>
-                  <Link href={category.link}>
-                    <Button className="bg-[#0F5C5B] text-white hover:bg-[#0A4342] transition-colors duration-300 rounded-full py-2 px-4">
-                      Explore Options
-                    </Button>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
+          <div className="space-y-2">
+            <Link href="/home" className="flex items-center p-2 rounded-lg text-gray-600 hover:bg-purple-100">
+              <Home className="h-5 w-5 mr-3" />
+              <span>Home</span>
+            </Link>
+            <Link href="/inbox" className="flex items-center p-2 rounded-lg text-gray-600 hover:bg-purple-100">
+              <BookOpen className="h-5 w-5 mr-3" />
+              <span>Inbox</span>
+            </Link>
+            <Link href="/content-library" className="flex items-center p-2 rounded-lg text-purple-600 hover:bg-purple-100">
+              <Library className="h-5 w-5 mr-3" />
+              <span>Content Library</span>
+            </Link>
+            <Link href="/settings" className="flex items-center p-2 rounded-lg text-gray-600 hover:bg-purple-100">
+              <Settings className="h-5 w-5 mr-3" />
+              <span>Settings</span>
+            </Link>
           </div>
-        </section>
+        </nav>
+      )}
 
-        {/* Features Section */}
-        <section className="py-16 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <h2 className={`${playfair.className} text-3xl md:text-4xl font-bold mb-12 text-center text-[#0F5C5B]`}>Why Choose Family Edition?</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <Shield className="w-16 h-16 text-[#0F5C5B] mx-auto mb-4" />
-                <h3 className="text-xl font-bold mb-2">Expert Guidance</h3>
-                <p>Access a network of certified professionals for personalized advice.</p>
-              </div>
-              <div className="text-center">
-                <Award className="w-16 h-16 text-[#0F5C5B] mx-auto mb-4" />
-                <h3 className="text-xl font-bold mb-2">Trusted Resources</h3>
-                <p>Benefit from our curated collection of articles and tools.</p>
-              </div>
-              <div className="text-center">
-                <ThumbsUp className="w-16 h-16 text-[#0F5C5B] mx-auto mb-4" />
-                <h3 className="text-xl font-bold mb-2">Supportive Community</h3>
-                <p>Join a compassionate community for shared experiences and support.</p>
+      <div className="flex flex-col flex-1 overflow-hidden">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
+          <div className={`mx-auto flex flex-col gap-4 ${isMobile ? 'max-w-3xl' : 'max-w-5xl'}`}>
+            <div className="flex items-center justify-between">
+              <h1 className="text-xl font-bold text-purple-800">Content Library</h1>
+              <Button size="icon" variant="ghost">
+                <Plus className="h-6 w-6" />
+              </Button>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Search content..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 w-full rounded-full border-gray-300 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
+                />
               </div>
             </div>
+            <ScrollArea className="whitespace-nowrap">
+              <div className="flex space-x-2">
+                {categories.map(category => (
+                  <Button
+                    key={category}
+                    onClick={() => setActiveCategory(category)}
+                    variant={activeCategory === category ? "default" : "outline"}
+                    className={`rounded-full px-4 py-2 text-sm font-medium ${
+                      activeCategory === category
+                        ? 'bg-purple-600 text-white'
+                        : 'text-purple-600 hover:bg-purple-100'
+                    }`}
+                  >
+                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                  </Button>
+                ))}
+              </div>
+            </ScrollArea>
           </div>
-        </section>
+        </header>
 
-        {/* Recent Articles Section */}
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <h2 className={`${playfair.className} text-3xl md:text-4xl font-bold mb-12 text-center text-[#0F5C5B]`}>Latest Articles</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {articles.map((article, index) => (
-                <motion.div 
-                  key={index}
-                  className="bg-[#FFE8D6] rounded-lg overflow-hidden shadow-lg"
-                  whileHover={{ y: -5 }}
-                >
-                  <Image src={article.image} alt={article.title} width={400} height={200} className="w-full h-48 object-cover" />
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold mb-2 text-[#0F5C5B]">{article.title}</h3>
-                    <p className="text-gray-600 mb-4">{article.excerpt}</p>
-                    <div className="flex items-center text-sm text-gray-500 mb-4">
-                      <span className="mr-4">{article.author}</span>
-                      <span>{article.date}</span>
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto p-4">
+          <div className={`mx-auto space-y-4 ${isMobile ? 'max-w-3xl' : 'max-w-5xl'}`}>
+            {filteredItems.map(item => (
+              <Card key={item.id} className="bg-white shadow-lg rounded-lg overflow-hidden">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge>{item.category}</Badge>
+                    <div className="flex items-center space-x-2">
+                      <SourceIcon source={item.source} />
+                      <span className="text-sm text-gray-500">{item.source}</span>
                     </div>
-                    <Link href={article.link}>
-                      <Button className="w-full bg-[#0F5C5B] text-white hover:bg-[#0A4342] transition-colors duration-300 rounded-full py-2 px-4">
-                        Read More
-                      </Button>
-                    </Link>
                   </div>
-                </motion.div>
-              ))}
-            </div>
+                  <h3 className="text-lg font-semibold mb-2 text-gray-800">{item.header}</h3>
+                  <p className="text-sm text-gray-600 mb-2">{item.summary}</p>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {item.suggestedTags.map((tag, index) => (
+                      <Badge key={index} variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                  <div className="flex justify-between items-center mt-4">
+                    <div className="flex space-x-2">
+                      <Button size="sm" variant="outline" onClick={() => handleMarkAsRead(item.id)} className="bg-purple-50 hover:bg-purple-100 text-purple-700">
+                        <Check className={`h-4 w-4 ${item.isRead ? 'text-green-500' : 'text-gray-500'}`} />
+                      </Button>
+                      <Button size="sm" variant="outline" className="bg-blue-50 hover:bg-blue-100 text-blue-700">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
+                      <ExternalLink className="h-5 w-5" />
+                    </a>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        </section>
-      </main>
-      <BottomNavigation />
+        </main>
+
+        {/* Bottom Navigation - only on mobile */}
+        {isMobile && (
+          <nav className="bg-white border-t border-gray-200 fixed bottom-0 left-0 right-0">
+            <div className="max-w-3xl mx-auto px-4 py-2 flex justify-around">
+              <Link href="/home" className="flex flex-col items-center text-gray-600 hover:text-purple-600">
+                <Home className="h-6 w-6" />
+                <span className="text-xs mt-1">Home</span>
+              </Link>
+              <Link href="/inbox" className="flex flex-col items-center text-gray-600 hover:text-purple-600">
+                <BookOpen className="h-6 w-6" />
+                <span className="text-xs mt-1">Inbox</span>
+              </Link>
+              <Link href="/content-library" className="flex flex-col items-center text-purple-600">
+                <Library className="h-6 w-6" />
+                <span className="text-xs mt-1">Library</span>
+              </Link>
+              <Link href="/settings" className="flex flex-col items-center text-gray-600 hover:text-purple-600">
+                <Settings className="h-6 w-6" />
+                <span className="text-xs mt-1">Settings</span>
+              </Link>
+            </div>
+          </nav>
+        )}
+      </div>
     </div>
   )
 }

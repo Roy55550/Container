@@ -5,7 +5,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
     domains: ['images.unsplash.com'],
-  }
+  },
+  // Add this line to enable webpack 5
+  webpack5: true,
 }
 
-module.exports = nextConfig
+module.exports = nextConfig;

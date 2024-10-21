@@ -1,14 +1,10 @@
-import './styles/globals.css';
-import { Metadata } from "next";
-import { Inter } from 'next/font/google';
-
-const inter = Inter({ subsets: ['latin'] });
+import './globals.css'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: "Family Edition",
-  description: "Empowering relationships at every stage of life",
-  robots: "noindex, nofollow"
-};
+  title: 'Your App Name',
+  description: 'Your app description',
+}
 
 export default function RootLayout({
   children,
@@ -17,10 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <meta name="robots" content="noindex, nofollow" />
-      </head>
       <body>{children}</body>
     </html>
-  );
+  )
 }

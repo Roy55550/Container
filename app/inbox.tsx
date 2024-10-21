@@ -1,15 +1,13 @@
 "use client";
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { Search, Home, BookOpen, Library, Settings, Youtube, Twitter, Globe, Plus, Check, Bookmark, Edit, MessageSquare, ExternalLink } from 'lucide-react'
+import { Home, BookOpen, Library, Settings, Youtube, Twitter, Globe, Plus, Check, Bookmark, Edit, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from "./components/ui/button"
 import { Badge } from "./components/ui/badge"
 import { Input } from "./components/ui/input"
 import { Textarea } from "./components/ui/textarea"
 import { Card, CardContent } from "./components/ui/card"
-import { ScrollArea } from "./components/ui/scroll-area"
 import {
   Dialog,
   DialogContent,
@@ -18,10 +16,7 @@ import {
   DialogFooter,
 } from "./components/ui/dialog"
 import {
-  Tooltip,
-  TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from "./components/ui/tooltip"
 
 interface InboxItem {
@@ -65,7 +60,6 @@ export default function Inbox() {
     link: '',
   })
   const [isMobile, setIsMobile] = useState(false)
-  const router = useRouter()
 
   useEffect(() => {
     const checkIsMobile = () => {

@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2015",
+    "downlevelIteration": true,
     "lib": [
       "dom",
       "dom.iterable",
@@ -37,6 +38,7 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    // Remove "node_modules" from this list if it's present
+    // ... other exclusions ...
   ]
 }

@@ -1,3 +1,6 @@
 import Inbox from '../inbox';
 
-export default Inbox;
+export default function InboxPage() {
+  return <Inbox />;
+}
+

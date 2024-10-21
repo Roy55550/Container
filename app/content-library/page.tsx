@@ -1,3 +1,5 @@
 import ContentLibrary from '../page';
 
-export default ContentLibrary;
+export default function ContentLibraryPage() {
+  return <ContentLibrary />;
+}

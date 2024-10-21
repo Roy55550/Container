@@ -1,22 +1,19 @@
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-  variant?: 'default' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline';
 }
 
-const Button: React.FC<ButtonProps> = ({ children, className, variant = 'default', ...props }) => {
-  const baseStyles = "min-h-[44px] min-w-[44px] px-4 py-2 rounded-full font-bold transition-all duration-300";
-  const variantStyles = {
-    default: "bg-[#0F5C5B] text-white hover:bg-[#0A4342]",
-    ghost: "bg-white text-[#0F5C5B] border border-[#0F5C5B] hover:bg-[#F0F0F0]"
+const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', ...props }) => {
+  const baseClasses = 'px-4 py-2 rounded-md font-semibold';
+  const variantClasses = {
+    primary: 'bg-blue-500 text-white hover:bg-blue-600',
+    secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300',
+    outline: 'border border-gray-300 text-gray-800 hover:bg-gray-100',
   };
 
   return (
-    <button
-      className={`${baseStyles} ${variantStyles[variant]} ${className} transform hover:scale-105`}
-      {...props}
-    >
+    <button className={`${baseClasses} ${variantClasses[variant]}`} {...props}>
       {children}
     </button>
   );

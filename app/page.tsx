@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react'
-import { Search, Home, BookOpen, Library, Settings, ExternalLink, Edit, Check, Plus, X, Youtube, Twitter } from 'lucide-react'
+import { Search, Home, BookOpen, Library, Settings, ExternalLink, Edit, Check, Plus, Youtube, Twitter } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from "./components/ui/button"
 import { Input } from "./components/ui/input"
@@ -55,7 +55,7 @@ export default function ContentLibrary() {
     return () => window.removeEventListener('resize', checkIsMobile)
   }, [])
 
-  const categories = ['all', ...new Set(items.map(item => item.category))]
+  const categories = ['all', ...Array.from(new Set(items.map(item => item.category)))]
 
   const filteredItems = items.filter(item => 
     (activeCategory === 'all' || item.category === activeCategory) &&

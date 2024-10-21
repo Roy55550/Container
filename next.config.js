@@ -7,6 +7,9 @@ const nextConfig = {
     unoptimized: true,
     domains: ['images.unsplash.com'],
   },
+  eslint: {
+    dirs: ['pages', 'components', 'lib', 'utils', 'hooks']
+  }
 }
 
 module.exports = nextConfig;

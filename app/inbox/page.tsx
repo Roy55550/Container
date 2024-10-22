@@ -22,6 +22,7 @@ import {
   TooltipProvider,
 } from "../components/ui/tooltip"
 import { getInboxItems, moveItemToContentLibrary, InboxItem } from '../../src/lib/db';
+import ShareButton from '../components/ShareButton';
 
 const inboxItems: InboxItem[] = [
   // ... (keep the dummy data as provided in your example)
@@ -228,6 +229,11 @@ export default function InboxPage() {
                           <Edit className="h-4 w-4" />
                           {!isMobile && <span className="ml-2">Edit</span>}
                         </Button>
+                        <ShareButton 
+                          title={item.header}
+                          text={item.summary}
+                          url={item.link}
+                        />
                       </div>
                       <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:text-purple-800">
                         <ExternalLink className="h-5 w-5" />

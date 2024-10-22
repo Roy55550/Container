@@ -71,4 +71,5 @@ export interface InboxItem {
   link: string;
   isRead?: boolean;
   date?: string;
+  movedAt?: string;
 }

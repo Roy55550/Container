@@ -11,6 +11,7 @@ import { ScrollArea } from "../components/ui/scroll-area"
 import LogoutButton from './LogoutButton'
 import { getContentLibraryItems, InboxItem } from '../../src/lib/db';
 import { useAuth } from '../../src/context/AuthContext';
+import ShareButton from './ShareButton';
 
 const SourceIcon: React.FC<{ source: string }> = ({ source }) => {
   switch (source.toLowerCase()) {
@@ -156,7 +157,7 @@ export default function ContentLibrary() {
                         </Badge>
                       ))}
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mt-4">
                       <a 
                         href={item.link} 
                         target="_blank" 
@@ -167,6 +168,11 @@ export default function ContentLibrary() {
                         <ExternalLink className="h-4 w-4 ml-1" />
                       </a>
                       <div className="flex space-x-2">
+                        <ShareButton 
+                          title={item.header}
+                          text={item.summary}
+                          url={item.link}
+                        />
                         <Button size="sm" variant="outline" onClick={() => handleMarkAsRead(item.id)}>
                           <Check className={`h-4 w-4 ${item.isRead ? 'text-green-500' : 'text-gray-500'}`} />
                         </Button>
